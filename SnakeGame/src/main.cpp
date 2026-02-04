@@ -195,7 +195,7 @@ public:
     }
 
     void CheckCollisionWithEdges(){
-        if((snake.body[0].x > cellCount) || (snake.body[0].x < 0) || (snake.body[0].y > cellCount) || (snake.body[0].y < 0))
+        if((snake.body[0].x > cellCount-1) || (snake.body[0].x < 0) || (snake.body[0].y > cellCount-1) || (snake.body[0].y < 0))
         {
             PlaySound(hitSound);
             GameOver();
