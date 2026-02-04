@@ -38,11 +38,31 @@ bool eventTriggered(double interval){
 
 class Snake {
 public:
+    Sound rightSound;
+    Sound leftSound;
+    Sound upSound;
+    Sound downSound;
     std::deque  <Vector2> body = {Vector2{6, 9}, Vector2{5, 9}, Vector2{4, 9}};
     Vector2 direction = {1, 0};
     Vector2 nextDirection = direction;    
 
     bool addSegment = false;
+    Snake(){
+        
+        rightSound = LoadSound("assets/right.wav");
+        leftSound = LoadSound("assets/left.wav");
+        upSound = LoadSound("assets/up.wav");
+        downSound = LoadSound("assets/down.wav");
+    }
+    
+
+    ~Snake(){
+        
+        UnloadSound(rightSound);
+        UnloadSound(leftSound);
+        UnloadSound(upSound);
+        UnloadSound(downSound);
+        }
 
     void Draw(){
         for(unsigned int i = 0; i < body.size(); i++){
@@ -54,7 +74,19 @@ public:
     }
 
     void Update(){
+        if (direction != nextDirection){
+            if (direction == Vector2{0,1}){
+                PlaySound(rightSound);
+            }else if (direction == Vector2{0,-1}){
+                PlaySound(leftSound);
+            }else if (direction == Vector2{1,0}){
+                PlaySound(downSound);
+            }else {
+                PlaySound(upSound);
+            }
+        }
         direction = nextDirection;
+        
         body.push_front(Vector2Add(body[0], direction));
         if (addSegment){
             addSegment = false;
@@ -113,12 +145,27 @@ public:
 class Game
 {
 public:
+    Sound eatSound;
+    Sound hitSound;
+    
     int score = 0;
     Snake snake = Snake();
     Food food = Food(snake.body);
     bool running = true;
 
+    Game(){
+        
+        eatSound = LoadSound("assets/eat_snake.wav");
+        hitSound = LoadSound("assets/hit_snake.wav");
+        
+    }
 
+    ~Game(){
+        UnloadSound(eatSound);
+        UnloadSound(hitSound);
+        
+        
+    }
     void Draw()
     {
         food.Draw();
@@ -139,6 +186,7 @@ public:
         if(Vector2Equals(snake.body[0], food.position))
         { 
             food.position = food.GenerateRandomPos(snake.body);
+            PlaySound(eatSound);
             snake.addSegment = true;
             score ++;
             return true;
@@ -149,6 +197,7 @@ public:
     void CheckCollisionWithEdges(){
         if((snake.body[0].x > cellCount) || (snake.body[0].x < 0) || (snake.body[0].y > cellCount) || (snake.body[0].y < 0))
         {
+            PlaySound(hitSound);
             GameOver();
         }
     }
@@ -156,6 +205,7 @@ public:
         for(unsigned int i = 1; i < snake.body.size(); i++){
             if(Vector2Equals(snake.body[0], snake.body[i]))
             {
+                PlaySound(hitSound);
                 GameOver();
             }
         }
@@ -176,7 +226,7 @@ int main()
     InitWindow(width+2*offset, height+2*offset, "Pong Game Raylib");
     SetTargetFPS(60);
     
-
+    InitAudioDevice();
     Game game = Game();
 
     while(!WindowShouldClose()){
@@ -221,7 +271,7 @@ int main()
         game.Draw();
         EndDrawing();
     }
-
+    CloseAudioDevice();
     CloseWindow();
     return 0;
 } 
