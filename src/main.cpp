@@ -215,7 +215,7 @@ int main()
 
         DrawRectangleLinesEx(Rectangle{(float)offset-5, (float)offset-5, (float)width+10, (float)height+10}, 5, WHITE);
         DrawCheckers();
-        DrawText("Raylib Pong Game", offset-5, 20, 40, WHITE);
+        DrawText("Raylib Snake Game", offset-5, 20, 40, WHITE);
         std::string textscore = "Score: "  + std::to_string(game.score);
         DrawText(textscore.c_str(), width*4/5 , 20, 40, WHITE);
         game.Draw();
